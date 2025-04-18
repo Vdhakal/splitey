@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../backend # Path relative to this docker-compose file
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080 (HTTP)
+      - "8081:8081" # Map host port 8081 to container port 8081 (HTTPS)
+    environment:
+      # Add environment variables needed by the backend
+      # Example: ASPNETCORE_ENVIRONMENT=Development
+      # Example: ConnectionStrings__DefaultConnection=... (will be set later)
+      ASPNETCORE_URLS: "https://+;http://+" # Listen on both HTTP and HTTPS
+      ASPNETCORE_HTTPS_PORT: "8081"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "your_dev_cert_password" # Replace with a secure password if needed for dev cert
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx # Path inside the container if using dev certs
+    volumes:
+      # Optional: Mount local code for development (if needed)
+      # - ../backend:/source # Mounts local backend code into the container
+      # Optional: Volume for HTTPS dev certificate
+      # - ~/.aspnet/https:/https/:ro # Mounts local dev certs (adjust path as needed)
+    networks:
+      - splitey-net
+
+  # Placeholder for the database service (MySQL)
+  # db:
+  #   image: mysql:8.0
+  #   container_name: splitey-db
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: your_mysql_root_password # CHANGE THIS
+  #     MYSQL_DATABASE: splitey_db
+  #     MYSQL_USER: splitey_user
+  #     MYSQL_PASSWORD: your_mysql_user_password # CHANGE THIS
+  #   ports:
+  #     - "3306:3306" # Map host port 3306 to container port 3306
+  #   volumes:
+  #     - splitey-db-data:/var/lib/mysql # Persist database data
+  #   networks:
+  #     - splitey-net
+
+networks:
+  splitey-net:
+    driver: bridge
+
+# volumes:
+#   splitey-db-data: # Define the named volume for database persistence

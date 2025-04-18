@@ -1,0 +1,36 @@
+# Node.js / Expo
+node_modules/
+.expo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+# .NET Core
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# IDE / OS specific
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+Thumbs.db
+.DS_Store

@@ -1,0 +1,28 @@
+name: Splitey CI
+
+on:
+  push:
+    branches: [ "main" ] # Or your primary branch name
+  pull_request:
+    branches: [ "main" ] # Or your primary branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Or choose a different runner if needed
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Add steps here later for:
+    # - Setting up .NET
+    # - Building the backend
+    # - Running backend tests
+    # - Setting up Node.js/Expo
+    # - Building the frontend (if applicable for CI)
+    # - Running frontend tests/linting
+    # - Building Docker images
+    # - etc.
+
+    - name: Placeholder step
+      run: echo "CI workflow placeholder - add build and test steps here."
