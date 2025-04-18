@@ -14,6 +14,14 @@ namespace splitey_backend.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Group>().ToTable("Groups");
+            modelBuilder.Entity<Expense>().ToTable("Expenses");
+            modelBuilder.Entity<Friendship>().ToTable("Friendships");
+            modelBuilder.Entity<SplitRelationship>().ToTable("SplitRelationships");
+
             modelBuilder.Entity<Friendship>()
                 .HasOne(f => f.User1)
                 .WithMany(u => u.FriendshipsInitiated)
