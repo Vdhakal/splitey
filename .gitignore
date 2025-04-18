@@ -7,6 +7,10 @@ yarn-error.log*
 .pnp/
 .pnp.js
 
+# Expo / React Native specific native builds
+android/
+ios/
+
 # .NET Core
 [Bb]in/
 [Oo]bj/
