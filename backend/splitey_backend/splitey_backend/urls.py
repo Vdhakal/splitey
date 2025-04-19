@@ -25,20 +25,18 @@ schema_view = get_schema_view(
         title="Splitey API",
         default_version='v1',
         description="API documentation for Splitey",
-        terms_of_service="https://www.example.com/terms/",
-        contact=openapi.Contact(email="your@email.com"),
-        license=openapi.License(name="BSD License"),
+        contact=openapi.Contact(email="support@splitey.com"),
     ),
     public=True,
-    permission_classes=[permissions.AllowAny],
+    permission_classes=(permissions.AllowAny,),
 )
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
     path('api/', include('main.urls')),
         # Swagger/OpenAPI endpoints:
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+ path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
 
 ]

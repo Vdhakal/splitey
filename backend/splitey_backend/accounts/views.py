@@ -40,7 +40,9 @@ class FriendshipCreateAPIView(generics.CreateAPIView):
 # retrieve friends balances
 class FriendshipBalanceAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = FriendshipSerializer
 
+    queryset = Friendship.objects.all()
     def get(self, request, *args, **kwargs):
         user = request.user
         friendships = Friendship.objects.filter(user1=user)
