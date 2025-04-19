@@ -13,23 +13,26 @@ jobs:
           DISCORD_WEBHOOK: https://discord.com/api/webhooks/1363237027688087622/Hvf-0zMTpYnr2rRiso0o_Pj4GRJr4J_T6q7L98TKuXA-4gYQZfFUCjYVZscfNPdSst_q
         run: |
           PR_AUTHOR=$(echo ${{ github.event.pull_request.user.login }} | sed 's/[^a-zA-Z0-9_]/_/g')
-          PR_TITLE=$(echo "${{ github.event.pull_request.title }}" | jq -sRr @uri)
+          PR_TITLE="${{ github.event.pull_request.title }}"
           PR_URL=${{ github.event.pull_request.html_url }}
           
           if [[ "${{ github.event.action }}" == "opened" ]]; then
-            MESSAGE="Goddamn PR banyo hai ${PR_AUTHOR}: $(echo "${{ github.event.pull_request.title }}" | jq -sRr @uri -) - ${PR_URL}"
+            MESSAGE="New pull request opened by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "reopened" ]]; then
-            MESSAGE="Oe PR feri open garey hai ${PR_AUTHOR}: $(echo "${{ github.event.pull_request.title }}" | jq -sRr @uri -) - ${PR_URL}"
+            MESSAGE="Pull request reopened by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "edited" ]]; then
-            MESSAGE="Oe muji kasley PR edit haanyo? ${PR_AUTHOR}: $(echo "${{ github.event.pull_request.title }}" | jq -sRr @uri -) - ${PR_URL}"
+            MESSAGE="Pull request edited by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "synchronize" ]]; then
-            MESSAGE="Oe PR sync hanyo hai ${PR_AUTHOR}: $(echo "${{ github.event.pull_request.title }}" | jq -sRr @uri -) - ${PR_URL}"
+            MESSAGE="Pull request synchronized by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "closed" ]]; then
             if ${{ github.event.pull_request.merged }}; then
-              MESSAGE="Baley ko puti merge vayo hai ${PR_AUTHOR}: $(echo "${{ github.event.pull_request.title }}" | jq -sRr @uri -)"
+              MESSAGE="Pull request merged by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
             else
-              MESSAGE="Baley ko puti close vayo hai ${PR_AUTHOR}: $(echo "${{ github.event.pull_request.title }}" | jq -sRr @uri -) - ${PR_URL}"
+              MESSAGE="Pull request closed by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
             fi
           fi
           
+          # Escape special characters for JSON
+          MESSAGE=$(echo "$MESSAGE" | sed 's/["\\\\]/\\\\&/g; s/[$]/\\&/g')
+
           curl -H "Content-Type: application/json" -d "{\"content\": \"$MESSAGE\"}" $DISCORD_WEBHOOK
