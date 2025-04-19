@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from .models import Expense, SplitRelationship
+from accounts.models import User
+from .models import ExpenseGroup
+
 
 class SplitRelationshipSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,9 +11,6 @@ class SplitRelationshipSerializer(serializers.ModelSerializer):
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
-    splits = SplitRelationshipSerializer(many=True, read_only=True)
-    split_among = serializers.PrimaryKeyRelatedField(many=True, queryset=Expense.split_among.field.related_model.objects.all())
-
     class Meta:
         model = Expense
-        fields = '__all__'
+        fields = ['id', 'amount', 'comments', 'group']

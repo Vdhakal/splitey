@@ -1,49 +1,35 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Friendship, ExpenseGroup
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
+    
+# friendship serializer
+class FriendshipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friendship
+        fields = ['id', 'user1', 'user2']
 
-class UserRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+
+# retrieve friends balances
+class FriendBalanceSerializer(serializers.Serializer):
+    friend_id = serializers.IntegerField()
+    friend_name = serializers.CharField()
+    friend_email = serializers.EmailField()
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    status = serializers.CharField()  # 'owes' or 'owed'
+
+
+# expense group serializer
+class ExpenseGroupCreateSerializer(serializers.ModelSerializer):
+    members = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
 
     class Meta:
-        model = User
-        fields = ('id', 'full_name', 'email', 'password')
+        model = ExpenseGroup
+        fields = ['id', 'name', 'members']
 
     def create(self, validated_data):
-        user = User(
-            email=validated_data['email'],
-            full_name=validated_data['full_name']
-        )
-        user.set_password(validated_data['password'])  # <-- Crucial method
-        user.save()
-        return user
-
-
-# user login serializer
-class UserLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
-
-    def validate(self, data):
-        email = data.get('email')
-        password = data.get('password')
-
-        # Use custom auth method to support email login
-        user = authenticate(request=self.context.get('request'), email=email, password=password)
-
-        if not user:
-            raise serializers.ValidationError("Invalid email or password.")
-        if not user.is_active:
-            raise serializers.ValidationError("User account is disabled.")
-
-        data['user'] = user
-        return data
-
-    def get_tokens_for_user(self, user):
-        refresh = RefreshToken.for_user(user)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
+        members = validated_data.pop('members')
+        group = ExpenseGroup.objects.create(**validated_data)
+        group.members.set(members)
+        return group

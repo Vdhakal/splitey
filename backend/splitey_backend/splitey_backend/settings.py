@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "main",
     "accounts",
-    "rest_framework"
+    "rest_framework",
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "splitey_backend.urls"
+
+AUTH_USER_MODEL = 'accounts.User'
+
 
 AUTHENTICATION_BACKENDS = [
     'accounts.backends.EmailBackend',  # use email to authenticate
@@ -108,11 +112,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'accounts.authentication.FirebaseAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
 }
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),

@@ -34,28 +34,7 @@ class Expense(models.Model):
         return f"Expense #{self.id} - {self.amount} by {self.added_by}"
 
 class SplitRelationship(models.Model):
-    expense = models.ForeignKey(
-        Expense,
-        on_delete=models.CASCADE,
-        related_name='splits'
-    )
-    
-    owes = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='owes_expenses'
-    )
-    
-    owed = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='owed_expenses'
-    )
-    
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-
-    class Meta:
-        unique_together = ('expense', 'owes', 'owed')
-
-    def __str__(self):
-        return f"{self.owes} owes {self.owed} {self.amount} for expense #{self.expense_id}"
+    expense = models.ForeignKey(Expense, on_delete=models.CASCADE, related_name='splits')
+    owes = models.ForeignKey(User, related_name='split_owes', on_delete=models.CASCADE)
+    owed = models.ForeignKey(User, related_name='split_owed', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
