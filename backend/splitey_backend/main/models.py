@@ -1,3 +1,60 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
-# Create your models here.
+User = get_user_model()
+
+class Expense(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    comments = models.TextField(null=True, blank=True)
+    
+    added_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='expenses_added'
+    )
+    
+    group = models.ForeignKey(
+        'Group',  # Assuming you have a Group model
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='expenses'
+    )
+    
+    split_among = models.ManyToManyField(
+        User,
+        through='SplitRelationship',
+        through_fields=('expense', 'owes'),
+        related_name='expenses_shared'
+    )
+
+    def __str__(self):
+        return f"Expense #{self.id} - {self.amount} by {self.added_by}"
+
+class SplitRelationship(models.Model):
+    expense = models.ForeignKey(
+        Expense,
+        on_delete=models.CASCADE,
+        related_name='splits'
+    )
+    
+    owes = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='owes_expenses'
+    )
+    
+    owed = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='owed_expenses'
+    )
+    
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        unique_together = ('expense', 'owes', 'owed')
+
+    def __str__(self):
+        return f"{self.owes} owes {self.owed} {self.amount} for expense #{self.expense_id}"
