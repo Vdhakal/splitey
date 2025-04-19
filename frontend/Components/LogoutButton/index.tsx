@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Alert,
   Platform,
@@ -13,19 +13,21 @@ import {
   ParamListBase,
   NavigationProp,
 } from '@react-navigation/native';
+import { useAuth } from '@/hooks/useAuth';
+import { AuthContext } from '@/context/AuthContext';
 
 const LogoutButton: React.FC = () => {
   const navigation: NavigationProp<ParamListBase> = useNavigation();
+  const { logout } = useContext(AuthContext); // Assuming you have a logout function in your AuthContext
 
   const handleLogout = () => {
+    logout();
     navigation.navigate('Login/index');
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login/index' }],
     });
     console.log('User logged out');
-    // Example: Clear user session or navigate to login screen
-    // AsyncStorage.clear(); // If using AsyncStorage for session
   };
 
   const mobilelogoutPress = () => {
