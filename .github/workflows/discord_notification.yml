@@ -17,22 +17,19 @@ jobs:
           PR_URL=${{ github.event.pull_request.html_url }}
           
           if [[ "${{ github.event.action }}" == "opened" ]]; then
-            MESSAGE="New pull request opened by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+            MESSAGE="Goddamn PR banyo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "reopened" ]]; then
-            MESSAGE="Pull request reopened by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+            MESSAGE="Oe PR feri open garey hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "edited" ]]; then
-            MESSAGE="Pull request edited by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+            MESSAGE="Oe muji kasley PR edit haanyo? ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "synchronize" ]]; then
-            MESSAGE="Pull request synchronized by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+            MESSAGE="Oe PR sync hanyo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "closed" ]]; then
             if ${{ github.event.pull_request.merged }}; then
-              MESSAGE="Pull request merged by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+              MESSAGE="Baley ko puti merge vayo hai ${PR_AUTHOR}: ${PR_TITLE}"
             else
-              MESSAGE="Pull request closed by ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+              MESSAGE="Baley ko puti close vayo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
             fi
           fi
           
-          # Escape special characters for JSON
-          MESSAGE=$(echo "$MESSAGE" | sed 's/["\\\\]/\\\\&/g; s/[$]/\\&/g')
-
           curl -H "Content-Type: application/json" -d "{\"content\": \"$MESSAGE\"}" $DISCORD_WEBHOOK
