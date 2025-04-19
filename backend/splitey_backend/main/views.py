@@ -1,9 +1,13 @@
 from rest_framework import generics, permissions, status
 from .models import Expense, SplitRelationship, ExpenseGroup
-from .serializers import ExpenseSerializer, SplitRelationshipSerializer
+from .serializers import ExpenseSerializer, SplitRelationshipSerializer, ExpenseSummarySerializer, GroupBalanceSerializer
 from rest_framework.response import Response
 from decimal import Decimal
 from accounts.models import User, Friendship
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from collections import defaultdict
 
 
 class ExpenseCreateAPIView(generics.CreateAPIView):
@@ -84,3 +88,74 @@ class SplitRelationshipDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = SplitRelationship.objects.all()
     serializer_class = SplitRelationshipSerializer
+
+
+# friends details transactions
+class FriendTransactionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, friend_id):
+        user = request.user
+        friend = get_object_or_404(User, id=friend_id)
+
+        # Individual expenses
+        individual_expenses = Expense.objects.filter(
+            added_by=user,
+            split_among=friend
+        )
+
+        # Group-based expenses (where friend is in group and expense has group)
+        group_expenses = Expense.objects.filter(
+            added_by=user,
+            group__members=friend
+        )
+
+        print(group_expenses)
+        combined = (individual_expenses | group_expenses).distinct()
+
+        serializer = ExpenseSummarySerializer(combined, many=True)
+        return Response(serializer.data)
+    
+
+# user's groups and the members balance
+class GroupBalancesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        groups = ExpenseGroup.objects.filter(members=user)
+        results = []
+
+        for group in groups:
+            group_expenses = Expense.objects.filter(group=group)
+            balances = defaultdict(Decimal)
+
+            for expense in group_expenses:
+                splits = SplitRelationship.objects.filter(expense=expense)
+
+                for split in splits:
+                    if split.owed == user and split.owes != user:
+                        # someone owes the user
+                        balances[split.owes] += split.amount
+                    elif split.owes == user and split.owed != user:
+                        # user owes someone
+                        balances[split.owed] -= split.amount
+
+            members_data = []
+            for other_user, amount in balances.items():
+                status = "owed" if amount > 0 else "owes" if amount < 0 else "settled"
+                members_data.append({
+                    "user_id": other_user.id,
+                    "full_name": other_user.full_name,
+                    "email": other_user.email,
+                    "balance": abs(amount),
+                    "status": status
+                })
+
+            results.append({
+                "group_id": group.id,
+                "group_name": group.name,
+                "balances": members_data
+            })
+
+        return Response(GroupBalanceSerializer(results, many=True).data)

@@ -10,6 +10,7 @@ from django.db.models import Q
 
 # friendship logic
 class FriendshipCreateAPIView(generics.CreateAPIView):
+    
     permission_classes = [permissions.IsAuthenticated]
 
     queryset = Friendship.objects.all()
