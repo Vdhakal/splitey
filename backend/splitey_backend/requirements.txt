@@ -6,6 +6,7 @@ cffi==1.17.1
 charset-normalizer==3.4.1
 cryptography==44.0.2
 Django==5.2
+django-cors-headers==4.7.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 drf-yasg==1.21.10
