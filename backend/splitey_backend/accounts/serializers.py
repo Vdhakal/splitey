@@ -26,10 +26,16 @@ class ExpenseGroupCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ExpenseGroup
-        fields = ['id', 'name', 'members']
+        fields = ['id', 'name', 'members', 'created_date']
 
     def create(self, validated_data):
         members = validated_data.pop('members')
         group = ExpenseGroup.objects.create(**validated_data)
         group.members.set(members)
         return group
+    
+# friend serializer
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'full_name', 'email']

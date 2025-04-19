@@ -3,3 +3,5 @@ __pycache__/
 firebase.json
 
 venv/
+
+*.pyc

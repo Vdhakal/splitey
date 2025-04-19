@@ -18,4 +18,4 @@ class ExpenseSerializer(serializers.ModelSerializer):
     split_among = SimpleUserSerializer(many=True, read_only=True)
     class Meta:
         model = Expense
-        fields = ['id', 'amount', 'comments', 'group', 'split_among']
+        fields = ['id', 'amount', 'comments', 'group', 'split_among', 'created_at']

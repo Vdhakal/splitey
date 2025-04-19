@@ -45,6 +45,23 @@ INSTALLED_APPS = [
     'corsheaders'
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8081/",
+
+]
+CSRF_TRUSTED_ORIGINS = [
+
+    "http://localhost:8081/"
+
+
+]
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-csrftoken",
+
+]
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -146,3 +163,15 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Enter token like: **Bearer &lt;your-token&gt;**',
+        }
+    },
+}
