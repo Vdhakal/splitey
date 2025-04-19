@@ -45,6 +45,23 @@ INSTALLED_APPS = [
     'corsheaders'
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8081/",
+
+]
+CSRF_TRUSTED_ORIGINS = [
+
+    "http://localhost:8081/"
+
+
+]
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-csrftoken",
+
+]
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
