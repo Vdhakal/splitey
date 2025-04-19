@@ -4,6 +4,8 @@ from .views import (
     ExpenseDetailView,
     SplitRelationshipListCreateView,
     SplitRelationshipDetailView,
+    FriendTransactionView,
+    GroupBalancesView
 )
 
 urlpatterns = [
@@ -12,4 +14,8 @@ urlpatterns = [
     
     path('splits/', SplitRelationshipListCreateView.as_view(), name='split-list-create'),
     path('splits/<int:pk>/', SplitRelationshipDetailView.as_view(), name='split-detail'),
+    path('friends/<int:friend_id>/transactions/', FriendTransactionView.as_view(), name='friend-transactions'),
+    path('groups/balances/', GroupBalancesView.as_view(), name='group-balances'),
+
+
 ]
