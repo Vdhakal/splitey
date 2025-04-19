@@ -17,7 +17,7 @@ jobs:
           PR_URL=${{ github.event.pull_request.html_url }}
           
           if [[ "${{ github.event.action }}" == "opened" ]]; then
-            MESSAGE="Oe PR banyo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+            MESSAGE="Goddamn PR banyo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "reopened" ]]; then
             MESSAGE="Oe PR feri open garey hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "edited" ]]; then
@@ -26,7 +26,7 @@ jobs:
             MESSAGE="Oe PR sync hanyo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
           elif [[ "${{ github.event.action }}" == "closed" ]]; then
             if ${{ github.event.pull_request.merged }}; then
-              MESSAGE="Oe PR merge vayo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
+              MESSAGE="Baley ko puti merge vayo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
             else
               MESSAGE="Baley ko puti close vayo hai ${PR_AUTHOR}: ${PR_TITLE} - ${PR_URL}"
             fi
