@@ -1,8 +1,8 @@
 import React from 'react';
-import { TextInput, Button } from 'react-native';
+import { TextInput } from 'react-native';
 import styled from 'styled-components/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 const Container = styled.View`
   flex: 1;
@@ -28,18 +28,36 @@ const Input = styled(TextInput)`
   background-color: #fff;
 `;
 
-const StyledButton = styled(Button)`
+const StyledButton = styled.TouchableOpacity`
+  background-color: #007bff;
+  padding: 12px 24px;
+  border-radius: 8px;
   margin-top: 10px;
 `;
 
+const ButtonText = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+`;
+
 export default function Login() {
-  const navigation = useNavigation();
+  const router = useRouter();
+
   const handleLogin = async () => {
-    navigation.navigate('index'); 
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'index' }], 
-    });
+    try {
+      // Simulate authentication logic
+      console.log('Logging in...');
+
+      // Store user session (optional)
+      //await AsyncStorage.setItem('isLoggedIn', 'true');
+
+      // Navigate to the Dashboard and reset the navigation stack
+      router.replace('/Dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -47,7 +65,9 @@ export default function Login() {
       <Title>Login</Title>
       <Input placeholder="Email" keyboardType="email-address" />
       <Input placeholder="Password" secureTextEntry />
-      <StyledButton title="Log In" onPress={handleLogin} />
+      <StyledButton onPress={handleLogin}>
+        <ButtonText>Log In</ButtonText>
+      </StyledButton>
     </Container>
   );
 }

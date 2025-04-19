@@ -1,36 +1,31 @@
-import { Text, View, TouchableOpacity } from 'react-native';
-import styled from 'styled-components/native';
-import { useNavigation } from 'expo-router';
+// app/index.tsx
+import { Text, View } from "react-native";
+import styled from "styled-components/native";
+import { Link } from "expo-router";
 
 export default function Index() {
-  const navigation = useNavigation();
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
+    <Container>
       <Text>Main 3</Text>
       <StyledButton
-        onPress={() => {
-          // Navigate to the login screen
-          navigation.navigate('Login/index');
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login/index' }],
-          });
-        }}
+        // Use Link from expo-router for navigation
+        href="/Login"
+        asChild
       >
         <ButtonText>Go to Login</ButtonText>
       </StyledButton>
-    </View>
+    </Container>
   );
 }
 
-// Styled TouchableOpacity for the button
-const StyledButton = styled(TouchableOpacity)`
+// Styled Components
+const Container = styled(View)`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledButton = styled(Link)`
   background-color: #007bff;
   border-radius: 4px;
   padding: 10px 20px;
