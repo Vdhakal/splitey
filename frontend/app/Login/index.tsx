@@ -35,12 +35,10 @@ const StyledButton = styled(Button)`
 export default function Login() {
   const navigation = useNavigation();
   const handleLogin = async () => {
-    // Simulate login logic
-    await AsyncStorage.setItem('isLoggedIn', 'true');
-    navigation.navigate('index'); // Navigate to the main screen after login
+    navigation.navigate('index'); 
     navigation.reset({
       index: 0,
-      routes: [{ name: 'index' }], // Reset the navigation stack
+      routes: [{ name: 'index' }], 
     });
   };
 
