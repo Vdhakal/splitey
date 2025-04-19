@@ -29,6 +29,8 @@ class Expense(models.Model):
         through_fields=('expense', 'owes'),
         related_name='expenses_shared'
     )
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"Expense #{self.id} - {self.amount} by {self.added_by}"
@@ -38,3 +40,4 @@ class SplitRelationship(models.Model):
     owes = models.ForeignKey(User, related_name='split_owes', on_delete=models.CASCADE)
     owed = models.ForeignKey(User, related_name='split_owed', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)

@@ -1,9 +1,11 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .serializers import   FriendshipSerializer, ExpenseGroupCreateSerializer
+from .serializers import   FriendshipSerializer, ExpenseGroupCreateSerializer, FriendSerializer
 from .models import User, Friendship, ExpenseGroup
 from decimal import Decimal
 from rest_framework import generics, permissions
+from rest_framework.views import APIView
+from django.db.models import Q
 
 
 # friendship logic
@@ -36,7 +38,27 @@ class FriendshipCreateAPIView(generics.CreateAPIView):
             FriendshipSerializer(friendship).data,
             status=status.HTTP_201_CREATED
         )
-    
+
+# retrieve friends
+class FriendListView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # Get friendships where user is either user1 or user2
+        friendships = Friendship.objects.filter(Q(user1=user) | Q(user2=user))
+
+        # Collect all unique friend users
+        friends = set()
+        for f in friendships:
+            if f.user1 == user:
+                friends.add(f.user2)
+            else:
+                friends.add(f.user1)
+
+        serializer = FriendSerializer(friends, many=True)
+        return Response(serializer.data)
 # retrieve friends balances
 class FriendshipBalanceAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
