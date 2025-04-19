@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, status
 from .models import Expense, SplitRelationship, ExpenseGroup
-from .serializers import ExpenseSerializer, SplitRelationshipSerializer, ExpenseSummarySerializer, GroupBalanceSerializer
+from .serializers import ExpenseSerializer, SplitRelationshipSerializer, FriendTransactionSerializer, GroupBalanceSerializer
 from rest_framework.response import Response
 from decimal import Decimal
 from accounts.models import User, Friendship
@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from collections import defaultdict
+from django.db.models import Q
 
 
 class ExpenseCreateAPIView(generics.CreateAPIView):
@@ -98,23 +99,29 @@ class FriendTransactionView(APIView):
         user = request.user
         friend = get_object_or_404(User, id=friend_id)
 
-        # Individual expenses
-        individual_expenses = Expense.objects.filter(
-            added_by=user,
-            split_among=friend
-        )
+        # All splits involving this friend and the logged-in user
+        splits = SplitRelationship.objects.filter(
+            (Q(owes=user) & Q(owed=friend)) |
+            (Q(owes=friend) & Q(owed=user))
+        ).select_related('expense', 'expense__group')
 
-        # Group-based expenses (where friend is in group and expense has group)
-        group_expenses = Expense.objects.filter(
-            added_by=user,
-            group__members=friend
-        )
+        transactions = []
 
-        print(group_expenses)
-        combined = (individual_expenses | group_expenses).distinct()
+        for split in splits:
+            expense = split.expense
+            group_name = expense.group.name if expense.group else None
+            status = "owes" if split.owes == user else "owed"
 
-        serializer = ExpenseSummarySerializer(combined, many=True)
-        return Response(serializer.data)
+            transactions.append({
+                "expense_id": expense.id,
+                "amount": split.amount,
+                "comments": expense.comments,
+                "group_name": group_name,
+                "date": expense.created_at if hasattr(expense, 'created_at') else expense.id,  # fallback
+                "status": status
+            })
+
+        return Response(FriendTransactionSerializer(transactions, many=True).data)
     
 
 # user's groups and the members balance

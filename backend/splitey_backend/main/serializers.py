@@ -21,19 +21,13 @@ class ExpenseSerializer(serializers.ModelSerializer):
         fields = ['id', 'amount', 'comments', 'group', 'split_among', 'created_at']
 
 # friends details transactions
-class ExpenseSummarySerializer(serializers.ModelSerializer):
-    group_name = serializers.SerializerMethodField()
-    type = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Expense
-        fields = ['id', 'amount', 'comments', 'group_name', 'type']
-
-    def get_group_name(self, obj):
-        return obj.group.name if obj.group else None
-
-    def get_type(self, obj):
-        return "group" if obj.group else "individual"
+class FriendTransactionSerializer(serializers.Serializer):
+    expense_id = serializers.IntegerField()
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    comments = serializers.CharField()
+    group_name = serializers.CharField(allow_null=True)
+    date = serializers.DateTimeField()
+    status = serializers.CharField()  # "owes" or "owed"
     
 
 # groups and the members balance
